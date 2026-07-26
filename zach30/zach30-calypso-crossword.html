@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173f50">
+  <title>Happy 30th Zach! — Calypso Crossword</title>
+  <style>
+    :root {
+      --ink: #15242c;
+      --muted: #60717a;
+      --navy: #173f50;
+      --teal: #2b7485;
+      --teal-soft: #dceef2;
+      --paper: #fffdf8;
+      --cream: #f6f0e5;
+      --block: #d9dde1;
+      --line: #22333b;
+      --gold: #ffe39a;
+      --gold-deep: #9d6800;
+      --coral: #e56854;
+      --wrong: #c83f4d;
+      --wrong-soft: #ffe2e5;
+      --right: #34795d;
+      --shadow: 0 18px 55px rgba(35, 47, 54, .12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      min-height: 100%;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "Avenir Next", "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% 4%, rgba(255, 210, 94, .24) 0 8px, transparent 9px),
+        radial-gradient(circle at 16% 7%, rgba(229, 104, 84, .16) 0 6px, transparent 7px),
+        radial-gradient(circle at 91% 5%, rgba(43, 116, 133, .16) 0 7px, transparent 8px),
+        linear-gradient(180deg, #fffaf0 0, var(--cream) 32rem);
+    }
+
+    button, input { font: inherit; }
+
+    button {
+      color: inherit;
+      touch-action: manipulation;
+    }
+
+    .site-header {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 18px 20px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .eyebrow {
+      margin: 0 0 3px;
+      color: var(--teal);
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.85rem, 3.2vw, 3.2rem);
+      font-weight: 700;
+      line-height: .98;
+      letter-spacing: -.035em;
+    }
+
+    .workspace {
+      width: min(1320px, calc(100% - 24px));
+      margin: 0 auto 28px;
+      display: grid;
+      grid-template-columns: minmax(690px, 1.2fr) minmax(390px, .8fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .card {
+      overflow: hidden;
+      border: 1px solid rgba(23, 63, 80, .12);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .95);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .puzzle-card { min-width: 0; }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      border-bottom: 1px solid rgba(23, 63, 80, .12);
+      background: #fff;
+    }
+
+    .progress-wrap {
+      min-width: 150px;
+      display: grid;
+      gap: 5px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: .74rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8e9e7;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--teal), #64a89c);
+      transition: width .25s ease;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 7px;
+    }
+
+    .tool-button, .mini-button {
+      border: 1px solid rgba(23, 63, 80, .22);
+      border-radius: 999px;
+      background: white;
+      padding: 6px 9px;
+      color: var(--navy);
+      font-size: .76rem;
+      font-weight: 750;
+      cursor: pointer;
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+
+    .tool-button:hover, .mini-button:hover {
+      border-color: var(--teal);
+      background: #f1fafb;
+      transform: translateY(-1px);
+    }
+
+    .tool-button:focus-visible, .mini-button:focus-visible, .clue:focus-visible {
+      outline: 3px solid rgba(43, 116, 133, .3);
+      outline-offset: 2px;
+    }
+
+    .tool-button.danger {
+      border-color: rgba(200, 63, 77, .25);
+      color: #9a2f3a;
+    }
+
+    .current-clue {
+      min-height: 50px;
+      padding: 9px 14px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 11px;
+      align-items: baseline;
+      border-bottom: 1px solid rgba(23, 63, 80, .12);
+      background: #f8fbfa;
+    }
+
+    .current-label {
+      color: var(--teal);
+      font-size: .74rem;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .current-text {
+      font-size: .95rem;
+      line-height: 1.35;
+    }
+
+    .grid-stage {
+      overflow: auto;
+      padding: 10px;
+      background: #eef0ef;
+      overscroll-behavior: contain;
+    }
+
+    .crossword-grid {
+      --cols: 32;
+      --rows: 28;
+      width: clamp(620px, 52vw, 720px);
+      max-width: none;
+      aspect-ratio: var(--cols) / var(--rows);
+      display: grid;
+      grid-template-columns: repeat(var(--cols), 1fr);
+      grid-template-rows: repeat(var(--rows), 1fr);
+      margin: 0 auto;
+      border: 1px solid rgba(34, 51, 59, .2);
+      background: var(--block);
+      outline: none;
+      user-select: none;
+    }
+
+    .block {
+      min-width: 0;
+      min-height: 0;
+      background: var(--block);
+    }
+
+    .cell {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      border: 0;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: white;
+      cursor: pointer;
+      isolation: isolate;
+    }
+
+    .cell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: transparent;
+    }
+
+    .cell.active::before { background: var(--teal-soft); }
+    .cell.message::before { background: var(--gold); }
+    .cell.message.active::before { background: #ffd36a; }
+
+    .cell.selected {
+      z-index: 2;
+      box-shadow: inset 0 0 0 3px var(--teal);
+    }
+
+    .cell.wrong::before { background: var(--wrong-soft); }
+    .cell.wrong .cell-letter { color: var(--wrong); }
+    .cell.revealed .cell-letter { color: #855c00; }
+
+    .cell-number {
+      position: absolute;
+      top: 1px;
+      left: 2px;
+      color: #162229;
+      font-size: clamp(5px, .56vw, 8px);
+      font-weight: 650;
+      line-height: 1;
+    }
+
+    .cell-letter {
+      position: absolute;
+      inset: 21% 0 0;
+      display: grid;
+      place-items: center;
+      color: #111a1f;
+      font-size: clamp(9px, 1.2vw, 18px);
+      font-weight: 760;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .message-number {
+      position: absolute;
+      right: 2px;
+      bottom: 1px;
+      color: var(--gold-deep);
+      font-size: clamp(5px, .52vw, 8px);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .message-panel {
+      padding: 11px 14px 13px;
+      display: grid;
+      grid-template-columns: minmax(130px, .45fr) minmax(310px, 1fr);
+      gap: 12px;
+      align-items: center;
+      border-top: 1px solid rgba(23, 63, 80, .12);
+      background:
+        radial-gradient(circle at 8% 25%, rgba(229, 104, 84, .13) 0 4px, transparent 5px),
+        linear-gradient(110deg, #fff8e4, #fffdf8);
+    }
+
+    .message-copy h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.15rem;
+    }
+
+    .message-boxes {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .message-boxes .word-gap { margin-left: 10px; }
+
+    .message-box {
+      position: relative;
+      width: clamp(28px, 2.65vw, 36px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 2px solid #bd7b00;
+      border-radius: 7px;
+      background: white;
+      color: var(--navy);
+      font-size: clamp(1rem, 2vw, 1.45rem);
+      font-weight: 850;
+      text-transform: uppercase;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+
+    .message-box::after {
+      content: attr(data-index);
+      position: absolute;
+      right: 3px;
+      bottom: 1px;
+      color: #a66e00;
+      font-size: .48rem;
+      font-weight: 900;
+    }
+
+    .message-box.correct {
+      border-color: var(--right);
+      background: #eaf7ef;
+      transform: translateY(-2px);
+    }
+
+    .message-panel.complete {
+      background:
+        radial-gradient(circle at 8% 25%, rgba(229, 104, 84, .18) 0 4px, transparent 5px),
+        linear-gradient(110deg, #fff2bb, #f1faef);
+    }
+
+    .clues-card {
+      min-width: 0;
+      max-height: calc(100vh - 24px);
+      position: sticky;
+      top: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .clues-header {
+      padding: 12px 14px 9px;
+      border-bottom: 1px solid rgba(23, 63, 80, .12);
+      background: white;
+    }
+
+    .clues-header h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.45rem;
+    }
+
+    .clues-header p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: .8rem;
+    }
+
+    .clue-columns {
+      min-height: 0;
+      overflow: auto;
+      padding: 5px 7px 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: #fcfcf8;
+    }
+
+    .clue-section h3 {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      margin: 0;
+      padding: 8px 7px 6px;
+      background: rgba(252, 252, 248, .96);
+      color: var(--navy);
+      font-size: .78rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .clue-list {
+      display: grid;
+      gap: 3px;
+    }
+
+    .clue {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.9rem 1fr auto;
+      gap: 5px;
+      align-items: baseline;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      padding: 5px 6px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .clue:hover { background: #edf5f5; }
+    .clue.active { background: var(--teal-soft); color: #0d3d49; }
+    .clue.solved { color: #6d7c82; }
+    .clue.solved .clue-text { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+    .clue-number {
+      color: var(--teal);
+      font-size: .8rem;
+      font-weight: 850;
+      text-align: right;
+    }
+
+    .clue-text {
+      font-size: .9rem;
+      line-height: 1.25;
+    }
+
+    .clue-length {
+      color: #8b989d;
+      font-size: .72rem;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 100;
+      max-width: calc(100vw - 40px);
+      transform: translate(-50%, 22px);
+      opacity: 0;
+      pointer-events: none;
+      border-radius: 999px;
+      background: #132f3c;
+      padding: 11px 17px;
+      color: white;
+      font-size: .84rem;
+      font-weight: 700;
+      box-shadow: 0 12px 32px rgba(15, 38, 48, .26);
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .confetti-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -24px;
+      left: var(--x);
+      width: var(--w);
+      height: var(--h);
+      border-radius: 2px;
+      background: var(--color);
+      opacity: .95;
+      animation: confetti-fall var(--duration) cubic-bezier(.18, .7, .4, 1) var(--delay) forwards;
+    }
+
+    @keyframes confetti-fall {
+      0% { transform: translate3d(0, -3vh, 0) rotate(0deg); }
+      100% { transform: translate3d(var(--drift), 108vh, 0) rotate(var(--spin)); }
+    }
+
+    .footer {
+      padding: 0 24px 30px;
+      color: #718087;
+      font-size: .75rem;
+      text-align: center;
+    }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    @media (max-width: 1140px) {
+      .site-header { align-items: flex-start; }
+      .workspace { grid-template-columns: 1fr; }
+      .clues-card { position: static; max-height: none; }
+      .clue-columns { max-height: 620px; }
+      .crossword-grid { width: 720px; }
+    }
+
+    @media (max-width: 700px) {
+      .site-header {
+        padding: 18px 16px 10px;
+        display: block;
+      }
+      .workspace { width: calc(100% - 20px); gap: 12px; }
+      .toolbar { align-items: flex-start; }
+      .progress-wrap { min-width: 110px; }
+      .tool-button { padding: 6px 9px; font-size: .7rem; }
+      .current-clue { grid-template-columns: 1fr; gap: 2px; }
+      .grid-stage { padding: 8px; }
+      .crossword-grid { width: 680px; }
+      .message-panel { grid-template-columns: 1fr; gap: 10px; }
+      .message-copy { text-align: center; }
+      .message-boxes { gap: 3px; }
+      .message-boxes .word-gap { margin-left: 7px; }
+      .message-box { width: 29px; }
+      .clue-columns { grid-template-columns: 1fr; max-height: none; }
+    }
+
+    @media print {
+      body { background: white; }
+      .site-header, .toolbar, .current-clue, .clues-card, .footer { display: none !important; }
+      .workspace { display: block; width: 100%; margin: 0; }
+      .puzzle-card { border: 0; box-shadow: none; }
+      .grid-stage { overflow: visible; padding: 0; background: white; }
+      .crossword-grid { width: 100%; }
+      .message-panel { break-inside: avoid; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .001ms !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">Calypso Crossword</p>
+      <h1>Happy 30th Zach!</h1>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="card puzzle-card" aria-label="Interactive crossword">
+      <div class="toolbar">
+        <div class="progress-wrap" aria-label="Puzzle progress">
+          <div class="progress-label">
+            <span>Progress</span>
+            <span id="progress-value">0%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
+        <div class="toolbar-actions" aria-label="Puzzle tools">
+          <button class="tool-button" id="check-word" type="button">Check word</button>
+          <button class="tool-button" id="check-all" type="button">Check puzzle</button>
+          <button class="tool-button" id="reveal-word" type="button">Reveal word</button>
+          <button class="tool-button" id="reveal-all" type="button">Reveal puzzle</button>
+          <button class="tool-button danger" id="clear-word" type="button">Clear word</button>
+          <button class="tool-button danger" id="clear-all" type="button">Reset</button>
+        </div>
+      </div>
+
+      <div class="current-clue" aria-live="polite">
+        <span class="current-label" id="current-label">Select a clue</span>
+        <span class="current-text" id="current-text">Click a square or clue to begin.</span>
+      </div>
+
+      <div class="grid-stage">
+        <div
+          class="crossword-grid"
+          id="crossword-grid"
+          role="grid"
+          aria-label="Crossword grid"
+          tabindex="0"
+        ></div>
+      </div>
+
+      <section class="message-panel" id="message-panel" aria-labelledby="message-title">
+        <div class="message-copy">
+          <h2 id="message-title">Birthday message</h2>
+        </div>
+        <div class="message-boxes" id="message-boxes" aria-label="Birthday message extraction"></div>
+      </section>
+    </section>
+
+    <aside class="card clues-card" aria-label="Crossword clues">
+      <div class="clues-header">
+        <h2>Clues</h2>
+        <p>Click a clue to jump to its answer. Tab moves to the next clue.</p>
+      </div>
+      <div class="clue-columns">
+        <section class="clue-section">
+          <h3>Across</h3>
+          <div class="clue-list" id="across-clues"></div>
+        </section>
+        <section class="clue-section">
+          <h3>Down</h3>
+          <div class="clue-list" id="down-clues"></div>
+        </section>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">Made for Zach, with love from Calypso friends.</footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const PUZZLE = {"id":"zach30-calypso-crossword-v1","title":"Happy 30th Zach!","byline":"Calypso friends","width":32,"height":28,"entries":[{"number":1,"direction":"D","answer":"BELIEVER","row":0,"col":18,"clue":"First song Zach learned on triples (maybe)"},{"number":2,"direction":"D","answer":"LUFTBALLON","row":3,"col":9,"clue":"Floating object subject of a special wedding tune"},{"number":3,"direction":"D","answer":"CAYOOT","row":3,"col":29,"clue":"Descriptor for 13 Down"},{"number":4,"direction":"D","answer":"MANZANITA","row":4,"col":6,"clue":"Zach lives in the big apple, but the pans live aquí"},{"number":5,"direction":"A","answer":"SUPERLATIVES","row":4,"col":8,"clue":"Best served on a paper plate"},{"number":6,"direction":"D","answer":"TOYON","row":4,"col":15,"clue":"Magical spring show locale"},{"number":7,"direction":"A","answer":"MCMURTRY","row":5,"col":22,"clue":"Aerobic spring show locale"},{"number":8,"direction":"D","answer":"MAMMAMIA","row":5,"col":24,"clue":"Small group special by Zach"},{"number":9,"direction":"D","answer":"RUDDER","row":5,"col":26,"clue":"Steers a boat; also a good last name"},{"number":10,"direction":"A","answer":"SOPHOMORE","row":7,"col":11,"clue":"The best year to join Calypso"},{"number":10,"direction":"D","answer":"SILVERSTARS","row":7,"col":11,"clue":"Not gold, but they're 2010 winners"},{"number":11,"direction":"A","answer":"DUVONE","row":7,"col":26,"clue":"Renegade arranger"},{"number":12,"direction":"A","answer":"AKWASI","row":8,"col":6,"clue":"Bandleader born on Sunday"},{"number":13,"direction":"D","answer":"CALYPSBABS","row":9,"col":14,"clue":"2015 inductees"},{"number":14,"direction":"D","answer":"JABARI","row":9,"col":17,"clue":"Math music man"},{"number":15,"direction":"A","answer":"LAVIDA","row":10,"col":9,"clue":"Salsa standby"},{"number":16,"direction":"D","answer":"PRAS","row":10,"col":20,"clue":"Math music man"},{"number":17,"direction":"A","answer":"JIM","row":10,"col":22,"clue":"Math music man"},{"number":17,"direction":"D","answer":"JOE","row":10,"col":22,"clue":"Tuner guy"},{"number":18,"direction":"A","answer":"AMINOR","row":12,"col":6,"clue":"Key for a calypso epic"},{"number":19,"direction":"A","answer":"GARBAGEBAG","row":12,"col":16,"clue":"Vessel for all me clothes"},{"number":20,"direction":"D","answer":"BEERHUG","row":12,"col":23,"clue":"Post-final greeting"},{"number":21,"direction":"D","answer":"BELAFONTE","row":14,"col":7,"clue":"Civil rights icon, killed by Cardinal Calypso in 2023"},{"number":22,"direction":"A","answer":"ASTRID","row":14,"col":13,"clue":"33 Down protege"},{"number":23,"direction":"A","answer":"CALYPSBUNCH","row":16,"col":13,"clue":"The best kind of forced fun"},{"number":24,"direction":"D","answer":"SOCALYPSO","row":16,"col":18,"clue":"Grown up band"},{"number":25,"direction":"D","answer":"NIKE","row":16,"col":21,"clue":"Sponsor of the most scenic marathon"},{"number":26,"direction":"A","answer":"ZIPCAR","row":17,"col":3,"clue":"Free gig transportation provider"},{"number":27,"direction":"D","answer":"POMPEII","row":17,"col":5,"clue":"Zach's first arrangement"},{"number":28,"direction":"D","answer":"STACKS","row":18,"col":12,"clue":"Rollout rendezvous"},{"number":29,"direction":"D","answer":"GROUPME","row":19,"col":9,"clue":"Slack predecessor"},{"number":30,"direction":"A","answer":"HAMMER","row":19,"col":17,"clue":"Last song of the setlist"},{"number":31,"direction":"A","answer":"PANORAMA","row":20,"col":5,"clue":"Scenic competition?"},{"number":32,"direction":"A","answer":"LONGTIME","row":22,"col":0,"clue":"Not a short while"},{"number":33,"direction":"D","answer":"KELSEY","row":22,"col":15,"clue":"Pink moscato aficionado"},{"number":34,"direction":"A","answer":"PRESIDENTS","row":23,"col":9,"clue":"One of Zach's lineages"}],"message":"MOREPARTY","messageCells":[{"row":5,"col":24},{"row":7,"col":29},{"row":7,"col":18},{"row":12,"col":22},{"row":10,"col":20},{"row":8,"col":9},{"row":20,"col":9},{"row":4,"col":15},{"row":27,"col":15}]};
+    const storageKey = `${PUZZLE.id}:state`;
+    const grid = document.getElementById("crossword-grid");
+    const currentLabel = document.getElementById("current-label");
+    const currentText = document.getElementById("current-text");
+    const progressValue = document.getElementById("progress-value");
+    const progressFill = document.getElementById("progress-fill");
+    const messagePanel = document.getElementById("message-panel");
+    const messageBoxes = document.getElementById("message-boxes");
+    const toast = document.getElementById("toast");
+    const confettiLayer = document.getElementById("confetti-layer");
+    const acrossClues = document.getElementById("across-clues");
+    const downClues = document.getElementById("down-clues");
+
+    const keyFor = (row, col) => `${row},${col}`;
+    const idFor = (entry) => `${entry.number}${entry.direction}`;
+    const directionName = (direction) => direction === "A" ? "Across" : "Down";
+    const messageIndexByKey = new Map(
+      PUZZLE.messageCells.map((cell, index) => [keyFor(cell.row, cell.col), index])
+    );
+
+    const entries = PUZZLE.entries.map((entry) => {
+      const id = idFor(entry);
+      const cells = [...entry.answer].map((_, index) => ({
+        row: entry.row + (entry.direction === "D" ? index : 0),
+        col: entry.col + (entry.direction === "A" ? index : 0),
+      }));
+      return { ...entry, id, cells };
+    });
+    const entryById = new Map(entries.map((entry) => [entry.id, entry]));
+    const entryOrder = [...entries].sort((a, b) =>
+      a.row - b.row || a.col - b.col || (a.direction === "A" ? -1 : 1)
+    );
+
+    const cells = new Map();
+    entries.forEach((entry) => {
+      entry.cells.forEach((position, index) => {
+        const key = keyFor(position.row, position.col);
+        const existing = cells.get(key) || {
+          key,
+          row: position.row,
+          col: position.col,
+          solution: entry.answer[index],
+          entryIds: [],
+          number: null,
+          value: "",
+          element: null,
+        };
+        if (existing.solution !== entry.answer[index]) {
+          throw new Error(`Conflicting answer data at ${key}`);
+        }
+        existing.entryIds.push(entry.id);
+        if (index === 0) existing.number = entry.number;
+        cells.set(key, existing);
+      });
+    });
+
+    const values = new Map();
+    const wrongCells = new Set();
+    const revealedCells = new Set();
+    let activeEntryId = entryOrder.find((entry) => entry.direction === "A")?.id || entryOrder[0].id;
+    let selectedKey = entryById.get(activeEntryId).cells.map((cell) => keyFor(cell.row, cell.col))[0];
+    let celebrated = false;
+    let toastTimer = null;
+
+    function loadState() {
+      try {
+        const state = JSON.parse(localStorage.getItem(storageKey) || "{}");
+        Object.entries(state.values || {}).forEach(([key, value]) => {
+          if (cells.has(key) && /^[A-Z]?$/.test(value)) values.set(key, value);
+        });
+        (state.revealed || []).forEach((key) => {
+          if (cells.has(key)) revealedCells.add(key);
+        });
+        if (state.activeEntryId && entryById.has(state.activeEntryId)) {
+          activeEntryId = state.activeEntryId;
+        }
+        if (state.selectedKey && cells.has(state.selectedKey)) {
+          selectedKey = state.selectedKey;
+        }
+        celebrated = Boolean(state.celebrated);
+      } catch (error) {
+        console.warn("Could not restore crossword state", error);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify({
+          values: Object.fromEntries(values),
+          revealed: [...revealedCells],
+          activeEntryId,
+          selectedKey,
+          celebrated,
+        }));
+      } catch (error) {
+        console.warn("Could not save crossword state", error);
+      }
+    }
+
+    function buildGrid() {
+      grid.style.setProperty("--cols", PUZZLE.width);
+      grid.style.setProperty("--rows", PUZZLE.height);
+      const fragment = document.createDocumentFragment();
+      for (let row = 0; row < PUZZLE.height; row += 1) {
+        for (let col = 0; col < PUZZLE.width; col += 1) {
+          const key = keyFor(row, col);
+          const cell = cells.get(key);
+          if (!cell) {
+            const block = document.createElement("div");
+            block.className = "block";
+            block.setAttribute("aria-hidden", "true");
+            fragment.appendChild(block);
+            continue;
+          }
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "cell";
+          button.dataset.key = key;
+          button.dataset.row = row;
+          button.dataset.col = col;
+          button.setAttribute("role", "gridcell");
+          button.tabIndex = -1;
+
+          const number = document.createElement("span");
+          number.className = "cell-number";
+          number.textContent = cell.number || "";
+          const letter = document.createElement("span");
+          letter.className = "cell-letter";
+          letter.setAttribute("aria-hidden", "true");
+          const messageNumber = document.createElement("span");
+          messageNumber.className = "message-number";
+          messageNumber.setAttribute("aria-hidden", "true");
+
+          if (messageIndexByKey.has(key)) {
+            button.classList.add("message");
+            messageNumber.textContent = String(messageIndexByKey.get(key) + 1);
+          }
+          button.append(number, letter, messageNumber);
+          button.addEventListener("click", () => handleCellClick(key));
+          cell.element = button;
+          fragment.appendChild(button);
+        }
+      }
+      grid.appendChild(fragment);
+    }
+
+    function buildClues() {
+      [acrossClues, downClues].forEach((container) => { container.textContent = ""; });
+      entries
+        .slice()
+        .sort((a, b) => a.number - b.number || (a.direction === "A" ? -1 : 1))
+        .forEach((entry) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "clue";
+          button.dataset.entryId = entry.id;
+          button.innerHTML = `
+            <span class="clue-number">${entry.number}</span>
+            <span class="clue-text">${escapeHtml(entry.clue)}</span>
+            <span class="clue-length">(${entry.answer.length})</span>
+          `;
+          button.addEventListener("click", () => selectEntry(entry.id, true));
+          (entry.direction === "A" ? acrossClues : downClues).appendChild(button);
+        });
+    }
+
+    function buildMessageBoxes() {
+      messageBoxes.textContent = "";
+      [...PUZZLE.message].forEach((_, index) => {
+        const box = document.createElement("div");
+        box.className = "message-box";
+        if (index === 4) box.classList.add("word-gap");
+        box.dataset.index = index + 1;
+        box.setAttribute("aria-label", `Message letter ${index + 1}`);
+        messageBoxes.appendChild(box);
+      });
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      }[character]));
+    }
+
+    function entryCellKeys(entryId) {
+      return entryById.get(entryId).cells.map((cell) => keyFor(cell.row, cell.col));
+    }
+
+    function chooseEntryForCell(key, requestedDirection = null) {
+      const cell = cells.get(key);
+      if (requestedDirection) {
+        const requested = cell.entryIds.find((id) => entryById.get(id).direction === requestedDirection);
+        if (requested) return requested;
+      }
+      if (cell.entryIds.includes(activeEntryId)) return activeEntryId;
+      return cell.entryIds.find((id) => entryById.get(id).direction === "A") || cell.entryIds[0];
+    }
+
+    function handleCellClick(key) {
+      const cell = cells.get(key);
+      if (selectedKey === key && cell.entryIds.length > 1) {
+        const currentIndex = cell.entryIds.indexOf(activeEntryId);
+        activeEntryId = cell.entryIds[(currentIndex + 1) % cell.entryIds.length];
+      } else {
+        activeEntryId = chooseEntryForCell(key);
+      }
+      selectedKey = key;
+      renderSelection(true);
+    }
+
+    function selectEntry(entryId, focusGrid = false) {
+      const entry = entryById.get(entryId);
+      activeEntryId = entryId;
+      const keys = entryCellKeys(entryId);
+      selectedKey = keys.find((key) => !values.get(key)) || keys[0];
+      renderSelection(focusGrid);
+    }
+
+    function setSelected(key, direction = null, focusGrid = true) {
+      if (!cells.has(key)) return;
+      activeEntryId = chooseEntryForCell(key, direction);
+      selectedKey = key;
+      renderSelection(focusGrid);
+    }
+
+    function renderSelection(focusGrid = false) {
+      const activeKeys = new Set(entryCellKeys(activeEntryId));
+      cells.forEach((cell, key) => {
+        cell.element.classList.toggle("active", activeKeys.has(key));
+        cell.element.classList.toggle("selected", key === selectedKey);
+        cell.element.tabIndex = key === selectedKey ? 0 : -1;
+      });
+      document.querySelectorAll(".clue").forEach((clue) => {
+        clue.classList.toggle("active", clue.dataset.entryId === activeEntryId);
+      });
+      const entry = entryById.get(activeEntryId);
+      currentLabel.textContent = `${entry.number} ${directionName(entry.direction)}`;
+      currentText.textContent = entry.clue;
+      const clueButton = document.querySelector(`.clue[data-entry-id="${activeEntryId}"]`);
+      clueButton?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      if (focusGrid) cells.get(selectedKey).element.focus({ preventScroll: true });
+      saveState();
+    }
+
+    function moveWithinEntry(delta) {
+      const keys = entryCellKeys(activeEntryId);
+      const index = keys.indexOf(selectedKey);
+      const nextIndex = Math.max(0, Math.min(keys.length - 1, index + delta));
+      selectedKey = keys[nextIndex];
+      renderSelection(true);
+    }
+
+    function moveArrow(deltaRow, deltaCol, direction) {
+      const selected = cells.get(selectedKey);
+      let row = selected.row + deltaRow;
+      let col = selected.col + deltaCol;
+      while (row >= 0 && row < PUZZLE.height && col >= 0 && col < PUZZLE.width) {
+        const key = keyFor(row, col);
+        if (cells.has(key)) {
+          setSelected(key, direction, true);
+          return;
+        }
+        row += deltaRow;
+        col += deltaCol;
+      }
+    }
+
+    function moveClue(delta) {
+      const index = entryOrder.findIndex((entry) => entry.id === activeEntryId);
+      const next = (index + delta + entryOrder.length) % entryOrder.length;
+      selectEntry(entryOrder[next].id, true);
+    }
+
+    function toggleDirection() {
+      const cell = cells.get(selectedKey);
+      if (cell.entryIds.length < 2) return;
+      const current = cell.entryIds.indexOf(activeEntryId);
+      activeEntryId = cell.entryIds[(current + 1) % cell.entryIds.length];
+      renderSelection(true);
+    }
+
+    function enterLetter(letter) {
+      values.set(selectedKey, letter.toUpperCase());
+      wrongCells.delete(selectedKey);
+      revealedCells.delete(selectedKey);
+      const keys = entryCellKeys(activeEntryId);
+      const index = keys.indexOf(selectedKey);
+      if (index < keys.length - 1) selectedKey = keys[index + 1];
+      render();
+      cells.get(selectedKey).element.focus({ preventScroll: true });
+    }
+
+    function erase(backward) {
+      const currentValue = values.get(selectedKey) || "";
+      if (currentValue) {
+        values.delete(selectedKey);
+        wrongCells.delete(selectedKey);
+        revealedCells.delete(selectedKey);
+      } else if (backward) {
+        moveWithinEntry(-1);
+        values.delete(selectedKey);
+        wrongCells.delete(selectedKey);
+        revealedCells.delete(selectedKey);
+      }
+      render();
+    }
+
+    function handleKeydown(event) {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (/^[a-zA-Z]$/.test(event.key)) {
+        event.preventDefault();
+        enterLetter(event.key);
+        return;
+      }
+      const handlers = {
+        Backspace: () => erase(true),
+        Delete: () => erase(false),
+        ArrowLeft: () => moveArrow(0, -1, "A"),
+        ArrowRight: () => moveArrow(0, 1, "A"),
+        ArrowUp: () => moveArrow(-1, 0, "D"),
+        ArrowDown: () => moveArrow(1, 0, "D"),
+        Enter: toggleDirection,
+        " ": toggleDirection,
+        Tab: () => moveClue(event.shiftKey ? -1 : 1),
+      };
+      const handler = handlers[event.key];
+      if (handler) {
+        event.preventDefault();
+        handler();
+      }
+    }
+
+    function checkKeys(keys, label) {
+      let checked = 0;
+      let wrong = 0;
+      keys.forEach((key) => {
+        const value = values.get(key);
+        if (!value) return;
+        checked += 1;
+        if (value !== cells.get(key).solution) {
+          wrongCells.add(key);
+          wrong += 1;
+        } else {
+          wrongCells.delete(key);
+        }
+      });
+      render();
+      if (!checked) showToast(`${label} has no letters to check yet.`);
+      else if (wrong) showToast(`${wrong} letter${wrong === 1 ? "" : "s"} need another look.`);
+      else showToast(`${label} looks good!`);
+    }
+
+    function revealKeys(keys) {
+      keys.forEach((key) => {
+        values.set(key, cells.get(key).solution);
+        revealedCells.add(key);
+        wrongCells.delete(key);
+      });
+      render();
+    }
+
+    function clearKeys(keys) {
+      keys.forEach((key) => {
+        values.delete(key);
+        revealedCells.delete(key);
+        wrongCells.delete(key);
+      });
+      render();
+    }
+
+    function render() {
+      cells.forEach((cell, key) => {
+        const value = values.get(key) || "";
+        cell.element.querySelector(".cell-letter").textContent = value;
+        cell.element.classList.toggle("wrong", wrongCells.has(key));
+        cell.element.classList.toggle("revealed", revealedCells.has(key));
+        const entryNames = cell.entryIds.map((id) => {
+          const entry = entryById.get(id);
+          return `${entry.number} ${directionName(entry.direction)}`;
+        }).join(" and ");
+        cell.element.setAttribute(
+          "aria-label",
+          `Row ${cell.row + 1}, column ${cell.col + 1}, ${entryNames}${value ? `, ${value}` : ", blank"}`
+        );
+      });
+
+      entries.forEach((entry) => {
+        const solved = entryCellKeys(entry.id).every(
+          (key) => values.get(key) === cells.get(key).solution
+        );
+        document.querySelector(`.clue[data-entry-id="${entry.id}"]`)
+          ?.classList.toggle("solved", solved);
+      });
+
+      const filled = [...cells.keys()].filter((key) => values.get(key)).length;
+      const percent = Math.round((filled / cells.size) * 100);
+      progressValue.textContent = `${percent}%`;
+      progressFill.style.width = `${percent}%`;
+      renderMessage();
+      renderSelection(false);
+      saveState();
+    }
+
+    function renderMessage() {
+      const boxes = [...messageBoxes.children];
+      const extracted = PUZZLE.messageCells.map((position, index) => {
+        const value = values.get(keyFor(position.row, position.col)) || "";
+        boxes[index].textContent = value;
+        boxes[index].classList.toggle("correct", value === PUZZLE.message[index]);
+        return value;
+      }).join("");
+      const complete = extracted === PUZZLE.message;
+      messagePanel.classList.toggle("complete", complete);
+      if (complete && !celebrated) {
+        celebrated = true;
+        showToast("MORE PARTY! Happy 30th, Zach!");
+        rainConfetti();
+      } else if (!complete) {
+        celebrated = false;
+      }
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function rainConfetti() {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      confettiLayer.textContent = "";
+      const colors = ["#e56854", "#ffd35c", "#2b7485", "#62a98f", "#9d6ac5", "#f08ab1"];
+      for (let index = 0; index < 120; index += 1) {
+        const piece = document.createElement("i");
+        piece.className = "confetti-piece";
+        piece.style.setProperty("--x", `${Math.random() * 100}vw`);
+        piece.style.setProperty("--drift", `${(Math.random() - .5) * 34}vw`);
+        piece.style.setProperty("--spin", `${(Math.random() * 1100 - 550).toFixed(0)}deg`);
+        piece.style.setProperty("--duration", `${(1.9 + Math.random() * 1.5).toFixed(2)}s`);
+        piece.style.setProperty("--delay", `${(Math.random() * .45).toFixed(2)}s`);
+        piece.style.setProperty("--w", `${5 + Math.random() * 7}px`);
+        piece.style.setProperty("--h", `${8 + Math.random() * 10}px`);
+        piece.style.setProperty("--color", colors[index % colors.length]);
+        confettiLayer.appendChild(piece);
+      }
+      window.setTimeout(() => { confettiLayer.textContent = ""; }, 3900);
+    }
+
+    function bindControls() {
+      grid.addEventListener("keydown", handleKeydown);
+      document.getElementById("check-word").addEventListener("click", () => {
+        checkKeys(entryCellKeys(activeEntryId), "This word");
+      });
+      document.getElementById("check-all").addEventListener("click", () => {
+        checkKeys([...cells.keys()], "The puzzle");
+      });
+      document.getElementById("reveal-word").addEventListener("click", () => {
+        if (window.confirm("Reveal the selected answer?")) revealKeys(entryCellKeys(activeEntryId));
+      });
+      document.getElementById("reveal-all").addEventListener("click", () => {
+        if (window.confirm("Reveal the entire puzzle?")) revealKeys([...cells.keys()]);
+      });
+      document.getElementById("clear-word").addEventListener("click", () => {
+        clearKeys(entryCellKeys(activeEntryId));
+      });
+      document.getElementById("clear-all").addEventListener("click", () => {
+        if (window.confirm("Clear every entered letter and start over?")) {
+          values.clear();
+          wrongCells.clear();
+          revealedCells.clear();
+          celebrated = false;
+          render();
+        }
+      });
+    }
+
+    loadState();
+    buildGrid();
+    buildClues();
+    buildMessageBoxes();
+    bindControls();
+    render();
+  })();
+  </script>
+</body>
+</html>
